@@ -6,6 +6,8 @@ def extract_irreps(file_irreps,selected_modes=set(),freq_range=(0,np.inf)):
     
     return: a tuple of only necessary frequencies (in terms of labels) and corresponding labels
     '''
+    conv_THz_to_inv_cm = 33.35641 # 1 THz = 33.35641 cm^-1
+    
     with open(file_irreps, 'r') as f:
         data_irreps = yaml.load(f, Loader=yaml.SafeLoader)
         

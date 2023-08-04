@@ -1,4 +1,4 @@
-def scatter_input_files(folders,curdir=None,files=['INCAR','POTCAR','jobscript']):
+def scatter_input_files(folders,curdir=None,files=['INCAR','POTCAR','jobscript'],isposcar=False,poscar_files=[]):
     """
     This function aims to scatter files you are interested in
     to folders with displaced structures.
@@ -6,6 +6,8 @@ def scatter_input_files(folders,curdir=None,files=['INCAR','POTCAR','jobscript']
     :param folders: list of folders
     :param files: list of input file names to be scattered
     :param curdir: directory contains folders with displacements
+    :param isposcar: bool defines whether list of poscar files exists
+    :param poscar_files: list of poscar files !!!commensurate!!! with `folders`
     
     :returns: noting
     """
@@ -13,7 +15,7 @@ def scatter_input_files(folders,curdir=None,files=['INCAR','POTCAR','jobscript']
         os.chdir(curdir)
         
     incar_file, potcar_file, jobscript_file = None, None, None
-    poscar_file, kpoints_file = None, None
+    kpoints_file = None
     
     # Gathering filenames
     for file in files:
@@ -23,12 +25,13 @@ def scatter_input_files(folders,curdir=None,files=['INCAR','POTCAR','jobscript']
             potcar_file = file
         elif file == 'jobscript':
             jobscript_file = file
-        elif file[:7] == 'POSCAR-':
-            poscar_file = file
         elif file == 'KPOINTS':
             kpoints_file = file
     
     for folder in folders:
+        if not os.path.isdir(folder):
+            os.mkdir(folder)
+        
         shutil.copy(incar_file,folder)
         shutil.copy(potcar_file,folder)
         shutil.copy(jobscript_file,folder)
@@ -36,10 +39,6 @@ def scatter_input_files(folders,curdir=None,files=['INCAR','POTCAR','jobscript']
         if kpoints_file:
             shutil.copy(kpoints_file,folder)
             
-        if poscar_file:
-            shutil.move(poscar_file,folder+'/POSCAR')
-            
-    
         os.chdir(folder)
         
         with open(jobscript_file, 'r') as job:
@@ -49,6 +48,10 @@ def scatter_input_files(folders,curdir=None,files=['INCAR','POTCAR','jobscript']
             job.write(new)
             
         os.chdir(curdir)
+
+    if isposcar:
+        for poscar,folder in zip(poscar_files,folders):
+            shutil.move(poscar,folder+'/POSCAR')
 
 
 def rename_jobs(folders,curdir=None,jobscript_file='jobscript'):

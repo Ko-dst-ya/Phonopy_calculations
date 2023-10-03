@@ -32,22 +32,26 @@ def scatter_input_files(folders,curdir=None,files=['INCAR','POTCAR','jobscript']
         if not os.path.isdir(folder):
             os.mkdir(folder)
         
-        shutil.copy(incar_file,folder)
-        shutil.copy(potcar_file,folder)
-        shutil.copy(jobscript_file,folder)
+        if incar_file:
+            shutil.copy(incar_file,folder)
+        if potcar_file:
+            shutil.copy(potcar_file,folder)
+        if jobscript_file:
+            shutil.copy(jobscript_file,folder)
         
         if kpoints_file:
             shutil.copy(kpoints_file,folder)
-            
-        os.chdir(folder)
         
-        with open(jobscript_file, 'r') as job:
-            old = job.read()
-        new = old.replace('#SBATCH -J jobname',f'#SBATCH -J {folder}')
-        with open(jobscript_file, 'w') as job:
-            job.write(new)
-            
-        os.chdir(curdir)
+        if jobscript_file:
+            os.chdir(folder)
+
+            with open(jobscript_file, 'r') as job:
+                old = job.read()
+            new = old.replace('#SBATCH -J jobname',f'#SBATCH -J {folder}')
+            with open(jobscript_file, 'w') as job:
+                job.write(new)
+
+            os.chdir(curdir)
 
     if isposcar:
         for poscar,folder in zip(poscar_files,folders):

@@ -47,7 +47,7 @@ for file in raman_vasp:
 
     with open('jobscript', 'r') as job:
         old = job.read()
-    new = old.replace('#SBATCH -J eps_XRD', f'#SBATCH -J {band_index}.{displ}')
+    new = old.replace('#SBATCH -J eps_calc', f'#SBATCH -J {band_index}.{displ}')
     with open('jobscript', 'w') as job:
         job.write(new)
     

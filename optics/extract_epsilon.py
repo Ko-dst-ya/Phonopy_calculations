@@ -43,6 +43,17 @@ def boarders_for_epsilon(vasprun_file):
     
     return boarders
 
+def write_epsilon_to_file(vasprun_file,start,end,part_of_eps,kind_of_approximation,filename,folder_to_save='..',format='dat'):
+    '''
+    Write dielectric function to file
+    Example file name is "real_dd.dat"
+    
+    start - first line number for epsilon inside vasprun.file
+    end - last line number for epsilon inside vasprun.file
+    '''
+    
+    
+    os.system("awk '{if(NR>"+f"{start}"+" && NR<"+f"{end}"+") print }' "+vasprun_file+" >"+f" {folder_to_save}/{filename}.{format}")        
 
 def read_epsilon(file):
   '''
